@@ -2,39 +2,34 @@ name: CI
 
 on:
   push:
-    branches:
-      - main
+    branch: main
   pull_request:
-    branches:
-      - main
+    branch: main
 
 jobs:
   build:
-    env:
-      BUILD_CONFIG: "Release"
-      SOLUTION: "src/HttpRequestSpy.sln"
-
     runs-on: ubuntu-latest
+
+    env:
+      SOLUTION: "src/HttpRequestSpy.sln"
+      BUILD_CONFIG: "Release"
 
     steps:
       - uses: actions/checkout@v2
-
-      - name: Setup NuGet
-        uses: NuGet/setup-nuget@v1.0.5
-
-      - name: Restore dependencies
-        run: nuget restore $SOLUTION
 
       - name: Setup .NET
         uses: actions/setup-dotnet@v1
         with:
           dotnet-version: |
-            6.0.x
-            7.0.x
             8.0.x
+            7.0.x
+            6.0.x
+
+      - name: Restore dependencies
+        run: dotnet restore ${{ env.SOLUTION }}
 
       - name: Build
-        run: dotnet build $SOLUTION --configuration $BUILD_CONFIG --no-restore
+        run: dotnet build ${{ env.SOLUTION }} --configuration ${{ env.BUILD_CONFIG }} --no-restore
 
       - name: Run tests
-        run: dotnet test src/**/*Test*.csproj /p:Configuration=$env:BUILD_CONFIG --no-restore --no-build --verbosity normal
+        run: dotnet test src/**/*Test*.csproj --no-restore --verbosity normal
