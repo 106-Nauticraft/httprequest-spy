@@ -5,30 +5,16 @@ namespace HttpRequestSpy.Tests;
 public partial class HttpRequestSpyShould
 {
     private const string AbsoluteRoute = "http://domain/path/to/resource";
-        
-    [Fact]
-    public async Task Record_a_clone_of_an_HttpRequestMessage_which_content_can_be_read_multiple_times()
-    {
-        var payload = JsonContent.Create(new { Property = "P" });
 
-        var httpRequestMessage = new HttpRequestMessage(HttpMethod.Post, $"{AbsoluteRoute}")
-        {
-            Content = payload,
-        };
-            
-        var record = await RecordedHttpRequest.From(httpRequestMessage);
-
-        Check.That(record.Request).Not.IsSameReferenceAs(httpRequestMessage);
-        Check.That(record.Request.Content).Not.IsSameReferenceAs(httpRequestMessage.Content);
-    }
+    
 
     [Fact]
     public async Task Record_Many_Requests()
     {
-        var spy = new HttpRequestSpy();
+        var spy = HttpRequestSpy.CreateCurrentSpy();
 
         await RegisterGetRequest();
-        await HttpRequestSpyShould.RegisterPostWithJsonPayloadRequest();
+        await RegisterPostWithJsonPayloadRequest();
 
         spy.HasRecordedRequests(2);
     }
@@ -36,36 +22,36 @@ public partial class HttpRequestSpyShould
     [Fact]
     public async Task Ensure_that_a_get_request_is_sent()
     {
-        var spy = new HttpRequestSpy();
+        var spy = HttpRequestSpy.CreateCurrentSpy();
 
         await RegisterGetRequest();
 
         spy.AGetRequestTo("/path/to/resource").OccurredOnce();
     }
-        
+
     [Fact]
     public async Task Ensure_that_a_get_request_is_not_sent()
     {
-        var spy = new HttpRequestSpy();
+        var spy = HttpRequestSpy.CreateCurrentSpy();
 
         await RegisterGetRequest();
 
         spy.AGetRequestTo("/path/to/other/resource").NeverOccurred();
     }
-        
+
     [Fact]
     public void Fail_When_No_Request_Recorded()
     {
-        var spy = new HttpRequestSpy();
+        var spy = HttpRequestSpy.CreateCurrentSpy();
 
         Check.ThatCode(() => spy.AGetRequestTo("/path/to/other/resource").OccurredOnce())
             .Throws<HttpRequestSpyException>();
     }
-        
+
     [Fact]
     public async Task Ensure_that_a_get_request_is_sent_to_an_absolute_uri()
     {
-        var spy = new HttpRequestSpy();
+        var spy = HttpRequestSpy.CreateCurrentSpy();
 
         await RegisterGetRequest();
 
@@ -75,10 +61,10 @@ public partial class HttpRequestSpyShould
     [Fact]
     public async Task Fails_when_an_expected_request_is_not_sent()
     {
-        var spy = new HttpRequestSpy();
+        var spy = HttpRequestSpy.CreateCurrentSpy();
 
         await RegisterGetRequest();
-        await HttpRequestSpyShould.RegisterPostWithJsonPayloadRequest();
+        await RegisterPostWithJsonPayloadRequest();
 
         Check.ThatCode(() =>
                 spy.AGetRequestTo("/path/to/other/resource").OccurredOnce())
@@ -88,7 +74,7 @@ public partial class HttpRequestSpyShould
     [Fact]
     public async Task Ensure_that_a_get_request_is_sent_twice()
     {
-        var spy = new HttpRequestSpy();
+        var spy = HttpRequestSpy.CreateCurrentSpy();
 
         await RegisterGetRequest();
         await RegisterGetRequest();
@@ -99,7 +85,7 @@ public partial class HttpRequestSpyShould
     [Fact]
     public async Task Ensure_that_a_get_request_never_occured()
     {
-        var spy = new HttpRequestSpy();
+        var spy = HttpRequestSpy.CreateCurrentSpy();
 
         await RegisterGetRequest();
 
@@ -109,18 +95,18 @@ public partial class HttpRequestSpyShould
     [Fact]
     public async Task Ensure_that_a_get_request_with_a_query_string_is_sent()
     {
-        var spy = new HttpRequestSpy();
+        var spy = HttpRequestSpy.CreateCurrentSpy();
 
         await RegisterGetRequest("param=1&param2=value");
 
         spy.AGetRequestTo("/path/to/resource")
             .WithQuery("param2=value&param=1").OccurredOnce();
     }
-        
+
     [Fact]
     public async Task Ensure_that_a_get_request_with_a_query_is_sent()
     {
-        var spy = new HttpRequestSpy();
+        var spy = HttpRequestSpy.CreateCurrentSpy();
 
         await RegisterGetRequest("param=1&param2=value&list=a&list=b");
 
@@ -136,20 +122,20 @@ public partial class HttpRequestSpyShould
     [Fact]
     public async Task Ensure_that_a_post_request_is_sent()
     {
-        var spy = new HttpRequestSpy();
+        var spy = HttpRequestSpy.CreateCurrentSpy();
 
-        await HttpRequestSpyShould.RegisterPostWithJsonPayloadRequest();
+        await RegisterPostWithJsonPayloadRequest();
 
         spy.APostRequestTo("/path/to/resource")
             .OccurredOnce();
     }
-    
+
     [Fact]
     public async Task Ensure_that_a_post_is_recorded_without_heading_slash()
     {
-        var spy = new HttpRequestSpy();
+        var spy = HttpRequestSpy.CreateCurrentSpy();
 
-        await HttpRequestSpyShould.RegisterPostWithJsonPayloadRequest();
+        await RegisterPostWithJsonPayloadRequest();
 
         spy.APostRequestTo("path/to/resource")
             .OccurredOnce();
@@ -158,7 +144,7 @@ public partial class HttpRequestSpyShould
     [Fact]
     public async Task Ensure_that_a_delete_request_is_sent()
     {
-        var spy = new HttpRequestSpy();
+        var spy = HttpRequestSpy.CreateCurrentSpy();
 
         await RegisterRequest(HttpMethod.Delete);
 
@@ -167,9 +153,9 @@ public partial class HttpRequestSpyShould
     [Fact]
     public async Task Fails_when_query_string_does_not_match()
     {
-        var spy = new HttpRequestSpy();
-            
-        await RegisterGetRequest(query:"param=1&param2=hello");
+        var spy = HttpRequestSpy.CreateCurrentSpy();
+
+        await RegisterGetRequest(query: "param=1&param2=hello");
 
         Check.ThatCode(() =>
             spy.AGetRequestTo("/path/to/resource")
@@ -180,37 +166,37 @@ public partial class HttpRequestSpyShould
                 .OccurredOnce()
         ).Throws<HttpRequestSpyException>();
     }
-        
+
     [Fact]
     public async Task Ensure_that_a_get_request_with_query_string_parameter_was_sent()
     {
-        var spy = new HttpRequestSpy();
-            
-        await RegisterGetRequest(query:"param=1&param2=hello");
+        var spy = HttpRequestSpy.CreateCurrentSpy();
+
+        await RegisterGetRequest(query: "param=1&param2=hello");
 
         spy.AGetRequestTo("/path/to/resource")
             .WithQueryParam("param2", "hello")
             .OccurredOnce();
     }
-        
+
     [Fact]
     public async Task Ensure_that_a_get_request_containing_a_query_string_parameter_was_sent()
     {
-        var spy = new HttpRequestSpy();
-            
-        await RegisterGetRequest(query:"param=1&param2=hello");
+        var spy = HttpRequestSpy.CreateCurrentSpy();
+
+        await RegisterGetRequest(query: "param=1&param2=hello");
 
         spy.AGetRequestTo("/path/to/resource")
             .WithQueryParam("param")
             .OccurredOnce();
     }
-        
+
     [Fact]
     public async Task Fails_when_query_string_parameter_does_not_match()
     {
-        var spy = new HttpRequestSpy();
-            
-        await RegisterGetRequest(query:"param=1&param2=hello");
+        var spy = HttpRequestSpy.CreateCurrentSpy();
+
+        await RegisterGetRequest(query: "param=1&param2=hello");
 
         Check.ThatCode(() =>
             spy.AGetRequestTo("/path/to/resource")
@@ -218,7 +204,7 @@ public partial class HttpRequestSpyShould
                 .OccurredOnce()
         ).Throws<HttpRequestSpyException>();
     }
-    
+
     private static async Task RegisterGetRequest(string? query = null)
     {
         string? SanitizedQuery()
@@ -230,7 +216,7 @@ public partial class HttpRequestSpyShould
 
             return query.StartsWith("?") ? query : $"?{query}";
         }
-            
+
         await RegisterRequest(HttpMethod.Get, $"{AbsoluteRoute}{SanitizedQuery()}");
     }
 

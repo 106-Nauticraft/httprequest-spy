@@ -7,46 +7,46 @@ public partial class HttpRequestSpyShould
     [Fact]
     public async Task Ensure_that_a_post_request_with_json_payload_is_sent()
     {
-        var spy = new HttpRequestSpy();
+        var spy = HttpRequestSpy.CreateCurrentSpy();
 
-        await RegisterPostWithJsonPayloadRequest(new {something = true, property = 2});
+        await RegisterPostWithJsonPayloadRequest(new { something = true, property = 2 });
 
         spy.APostRequestTo("/path/to/resource")
-            .WithJsonPayload(new {something = true, property = 2})
+            .WithJsonPayload(new { something = true, property = 2 })
             .OccurredOnce();
     }
-        
+
     [Fact]
     public async Task Ensure_that_a_post_request_with_json_payload_containing_some_property_is_sent()
     {
-        var spy = new HttpRequestSpy();
+        var spy = HttpRequestSpy.CreateCurrentSpy();
 
-        await RegisterPostWithJsonPayloadRequest(new { something = new {active = true}, property = 2 });
+        await RegisterPostWithJsonPayloadRequest(new { something = new { active = true }, property = 2 });
 
         spy.APostRequestTo("/path/to/resource")
             .WithJsonPayloadProperty("something")
             .OccurredOnce();
     }
-    
-    
+
+
     [Fact]
     public async Task Ensure_that_a_post_request_with_json_payload_containing_some_property_matching_value_is_sent()
     {
-        var spy = new HttpRequestSpy();
+        var spy = HttpRequestSpy.CreateCurrentSpy();
 
-        await RegisterPostWithJsonPayloadRequest(new {something = new {active = true}, property = 2});
+        await RegisterPostWithJsonPayloadRequest(new { something = new { active = true }, property = 2 });
 
         spy.APostRequestTo("/path/to/resource")
-            .WithJsonPayloadProperty("something", new {active = true})
+            .WithJsonPayloadProperty("something", new { active = true })
             .OccurredOnce();
     }
-    
+
     [Fact]
     public async Task Ensure_that_a_post_request_with_payload_matching_a_json_schema_is_sent()
     {
-        var spy = new HttpRequestSpy();
+        var spy = HttpRequestSpy.CreateCurrentSpy();
 
-        await RegisterPostWithJsonPayloadRequest(new {something = true, property = 22});
+        await RegisterPostWithJsonPayloadRequest(new { something = true, property = 22 });
 
         var schema =
             @"{
@@ -72,30 +72,30 @@ public partial class HttpRequestSpyShould
             .WithPayloadMatchingJsonSchemaFromText(schema)
             .OccurredOnce();
     }
-    
-    
+
+
     [Fact]
     public async Task Deserialize_json_payload()
     {
-        var spy = new HttpRequestSpy();
+        var spy = HttpRequestSpy.CreateCurrentSpy();
 
         await RegisterPostWithJsonPayloadRequest(new JsonRequest("hello"));
 
         spy.APostRequestTo("/path/to/resource")
             .WithJsonPayload(new JsonRequest("hello"))
             .OccurredOnce();
-            
+
         Check.ThatCode(() =>
                 spy.APostRequestTo("/path/to/resource")
-                    .WithJsonPayload(new { property = "hello", nullableProperty = (object?)null }, logRecordedRequestPayload:true)
+                    .WithJsonPayload(new { property = "hello", nullableProperty = (object?)null }, logRecordedRequestPayload: true)
                     .OccurredOnce())
             .Throws<HttpRequestSpyException>();
     }
-    
+
     [Fact]
     public async Task Ensure_that_a_patch_request_with_json_payload_is_sent()
     {
-        var spy = new HttpRequestSpy();
+        var spy = HttpRequestSpy.CreateCurrentSpy();
 
         await RegisterRequest(HttpMethod.Patch, payload: new { something = true, property = 2 });
 
@@ -107,7 +107,7 @@ public partial class HttpRequestSpyShould
     [Fact]
     public async Task Ensure_that_a_put_request_with_json_payload_is_sent()
     {
-        var spy = new HttpRequestSpy();
+        var spy = HttpRequestSpy.CreateCurrentSpy();
 
         await RegisterRequest(HttpMethod.Put, payload: new { something = true, property = 2 });
 
@@ -119,23 +119,23 @@ public partial class HttpRequestSpyShould
     [Fact]
     public async Task Fails_when_json_payload_does_not_match_expected_one()
     {
-        var spy = new HttpRequestSpy();
+        var spy = HttpRequestSpy.CreateCurrentSpy();
 
-        await RegisterPostWithJsonPayloadRequest(new {something = true, property = 10, other = ""});
+        await RegisterPostWithJsonPayloadRequest(new { something = true, property = 10, other = "" });
 
         Check.ThatCode(() =>
                 spy.APostRequestTo("/path/to/resource")
-                    .WithJsonPayload(new {something = true, property = 2})
+                    .WithJsonPayload(new { something = true, property = 2 })
                     .OccurredOnce())
             .Throws<HttpRequestSpyException>();
     }
-    
+
     [Fact]
     public async Task Fails_when_payload_does_not_match_expected_schema()
     {
-        var spy = new HttpRequestSpy();
+        var spy = HttpRequestSpy.CreateCurrentSpy();
 
-        await RegisterPostWithJsonPayloadRequest(new {something = true, property = "string"});
+        await RegisterPostWithJsonPayloadRequest(new { something = true, property = "string" });
 
         var schema =
             @"{
@@ -168,8 +168,8 @@ public partial class HttpRequestSpyShould
     [Fact]
     public async Task Fails_when_actual_payload_is_not_a_json_as_expected()
     {
-        var spy = new HttpRequestSpy();
-            
+        var spy = HttpRequestSpy.CreateCurrentSpy();
+
         await HttpRequestSpyShould.RegisterPostWithXmlPayload(new
         {
             prop1 = 1,
@@ -190,7 +190,7 @@ public partial class HttpRequestSpyShould
     [Fact]
     public async Task Fails_when_json_payload_does_not_contain_expected_property()
     {
-        var spy = new HttpRequestSpy();
+        var spy = HttpRequestSpy.CreateCurrentSpy();
 
         await RegisterPostWithJsonPayloadRequest(new
         {
@@ -205,11 +205,11 @@ public partial class HttpRequestSpyShould
             )
             .Throws<HttpRequestSpyException>();
     }
-        
+
     [Fact]
     public async Task Fails_when_json_payload_contains_expected_property_but_values_do_not_match()
     {
-        var spy = new HttpRequestSpy();
+        var spy = HttpRequestSpy.CreateCurrentSpy();
 
         await RegisterPostWithJsonPayloadRequest(new
         {
@@ -229,16 +229,16 @@ public partial class HttpRequestSpyShould
                 .OccurredOnce()
         ).Throws<HttpRequestSpyException>();
     }
-    
+
     private record JsonRequest(
         [property: JsonPropertyName("PROPERTY")] 
         // ReSharper disable once NotAccessedPositionalProperty.Local
         string Property,
         // ReSharper disable once NotAccessedPositionalProperty.Local
         object? NullableProperty = null);
-    
+
     private static Task RegisterPostWithJsonPayloadRequest(object? payload = null)
     {
         return RegisterRequest(HttpMethod.Post, payload: payload);
     }
- }
+}

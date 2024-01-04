@@ -8,21 +8,24 @@ public sealed class HttpRequestSpy : IDisposable
     private static readonly AsyncLocal<HttpRequestSpy?> State = new();
     public static HttpRequestSpy? Current => State.Value;
 
-        
-    public HttpRequestSpy()
-        : this(true)
+    public static HttpRequestSpy Create()
     {
-        State.Value = this;
+        return new HttpRequestSpy(false);
     }
-        
-    public HttpRequestSpy(bool saveInAsyncLocale)
+
+    public static HttpRequestSpy CreateCurrentSpy()
+    {
+        return new HttpRequestSpy(true);
+    }
+
+    private HttpRequestSpy(bool saveInAsyncLocale)
     {
         if (saveInAsyncLocale)
         {
-            State.Value = this;                
+            State.Value = this;
         }
     }
-        
+
     private readonly List<RecordedHttpRequest> _recordedRequests = new();
 
     public void RecordRequest(RecordedHttpRequest recordedRequest)
@@ -32,15 +35,15 @@ public sealed class HttpRequestSpy : IDisposable
 
     public void HasRecordedRequests(int nbOfRecordedRequests)
     {
-        if (_recordedRequests.Count == nbOfRecordedRequests) 
+        if (_recordedRequests.Count == nbOfRecordedRequests)
             return;
-            
+
         var messageBuilder = new StringBuilder()
             .AppendLine();
 
         messageBuilder.AppendLine(
             $"  ⚠ Unexpected number of recorded requests. Expected : {nbOfRecordedRequests}. Actual : {_recordedRequests.Count}");
-                
+
         throw new HttpRequestSpyException(messageBuilder);
     }
 
@@ -58,17 +61,17 @@ public sealed class HttpRequestSpy : IDisposable
     {
         return new HttpRequestWithPayloadAssertion(HttpMethod.Patch, url, _recordedRequests);
     }
-        
+
     public HttpRequestWithPayloadAssertion APutRequestTo(string url)
     {
         return new HttpRequestWithPayloadAssertion(HttpMethod.Put, url, _recordedRequests);
     }
-        
+
     public HttpRequestAssertion ADeleteRequestTo(string url)
     {
         return new HttpRequestAssertion(HttpMethod.Delete, url, _recordedRequests);
     }
-        
+
     public void Dispose()
     {
         if (State.Value == this)
