@@ -12,6 +12,7 @@ jobs:
 
     env:
       SOLUTION: "src/HttpRequestSpy.sln"
+      PACKAGE_PROJECT: "src/HttpRequestSpy/HttpRequestSpy.csproj"
       BUILD_CONFIG: "Release"
 
     steps:
@@ -29,15 +30,14 @@ jobs:
             7.0.x
             6.0.x
 
-      - name: Restore .NET tools
-        run: dotnet tool restore
+      - name: Install GitVersion
+        uses: gittools/actions/gitversion/setup@v0
+        with:
+          versionSpec: "6.0.x"
+          includePrerelease: true
 
-      - name: Generate BUILD_VERSION
-        run: |
-          $version = $(dotnet gitversion /showvariable SemVer)
-          echo "BUILD_VERSION=$version"
-          echo "BUILD_VERSION=$version" | Out-File -FilePath $Env:GITHUB_ENV -Encoding utf-8 -Append
-        shell: pwsh
+      - name: Determine Version
+        uses: gittools/actions/gitversion/execute@v0
 
       - name: Restore dependencies
         run: dotnet restore ${{ env.SOLUTION }}
@@ -49,4 +49,4 @@ jobs:
         run: dotnet test src/**/*Test*.csproj --no-restore --verbosity normal
 
       - name: Pack
-        run: dotnet pack --configuration Release --output ./nupkg /p:Version=${{ env.BUILD_VERSION }}
+        run: dotnet pack ${{ env.PACKAGE_PROJECT }} --configuration Release --output ./nupkg /p:Version=${{ env.GITVERSION_SEMVER }}
