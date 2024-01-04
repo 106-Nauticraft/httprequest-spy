@@ -38,6 +38,9 @@ jobs:
 
       - name: Determine Version
         uses: gittools/actions/gitversion/execute@v0
+        with:
+          useConfigFile: true
+          configFilePath: "./src/GitVersion.yml"
 
       - name: Restore dependencies
         run: dotnet restore ${{ env.SOLUTION }}
