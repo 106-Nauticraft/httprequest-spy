@@ -37,4 +37,4 @@ jobs:
         run: dotnet build $SOLUTION --configuration $BUILD_CONFIG --no-restore
 
       - name: Run tests
-        run: dotnet test src/*.csproj /p:Configuration=$env:BUILD_CONFIG --no-restore --no-build --verbosity normal
+        run: dotnet test src/**/*Test*.csproj /p:Configuration=$env:BUILD_CONFIG --no-restore --no-build --verbosity normal
