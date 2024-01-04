@@ -47,3 +47,6 @@ jobs:
 
       - name: Run tests
         run: dotnet test src/**/*Test*.csproj --no-restore --verbosity normal
+
+      - name: Pack
+        run: dotnet pack --configuration Release --output ./nupkg /p:Version=${{ env.BUILD_VERSION }}
