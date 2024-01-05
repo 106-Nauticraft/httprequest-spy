@@ -74,7 +74,7 @@ One of the main idea behind this tool is to provide a user friendly error messag
         .OccurredOnce();
 ```
 
-```
+```text
  ⚠ Unexpected number of recorded requests matching expectations. Expected : 1. Actual : 0
 
 Expectations: 
@@ -199,6 +199,9 @@ You can define the query parameters of your expected request as an anonymous obj
 
 You can define the body of your expected request as an anonymous object or target a specific property.
 
+> Note: payloads are compared using a custom comparison tool that will do a deep equal and returns all the mismatching properties. See the [Comparison](src/HttpRequestSpy.Tests/Comparison) folder. 
+
+> Note 2 : By default, in the error message the payload of the recorded request won't be displayed because it would create a too long message. We only display the mismatching properties. Sometimes, for debugging purpose, you might want to display the full payload. To do so, you can pass `true` to the `logRecordedRequestPayload` parameter.
 
 #### Check Json payload
 
@@ -229,6 +232,10 @@ See [HttpRequestSpyWhenJsonPayloadShould.cs](./src/HttpRequestSpy.Tests/HttpRequ
        .OccurredOnce();
 ```
 
+> Note 1 : To compare payloads we use System.Text.Json. It is possible to pass a custom JsonSerializerOptions to the WithJsonPayloadProperty and WithJsonPayload methods. 
+
+> Note 2: We're not considering using Newtonsoft.Json at all and it is not possible to change the serializer.
+
 ##### Json payload matching JsonSchema
 
 Using JsonSchema, you can check that the payload matches a specific schema.
@@ -239,6 +246,7 @@ Using JsonSchema, you can check that the payload matches a specific schema.
        .OccurredOnce();
 ```
 
+> Note: it is also possible to specify the schema as a string.
 
 #### Check Xml payload
 
@@ -270,3 +278,9 @@ See [HttpRequestSpyWhenXmlPayloadShould.cs](./src/HttpRequestSpy.Tests/HttpReque
         
        .OccurredOnce();
 ```
+
+> Note 1: the xpath used is a simplified xpath. It is not a full xpath implementation. It ignores namespaces and attributes for readability purpose. We do not need such complex features. 
+
+> Note 2: in a future version, we might ignore the type node for anonymous objects.
+
+> Note 3: XSD validation is not supported yet.
