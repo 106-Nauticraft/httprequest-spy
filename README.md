@@ -1,5 +1,7 @@
 # HttpRequestSpy
 
+![example workflow](https://github.com/benoit-maurice/httprequest-spy/actions/workflows/main.yml/badge.svg)
+
 `HttpRequestSpy` is a tool aiming to test outgoing HttpRequest sent via an HttpClient.
 
 It compares all sent http requests to an expected request definition and provides a user friendly error message when no recorded httprequest matches the expected one.
