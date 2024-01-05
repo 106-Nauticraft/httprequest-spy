@@ -10,7 +10,7 @@ This tool is useful when you want to test your outgoing http requests but you do
 
 ## Installation 
 
-``dotnet add package HttpRequestSpy``
+``dotnet add package HttpRequest.Spy``
 
 ## Usage
 
