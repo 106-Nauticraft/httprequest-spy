@@ -34,7 +34,7 @@ This tool is useful when you want to test your outgoing http requests but you do
            .WithQuery(new {
                id = "12"
            })
-           .OccuredOnce();
+           .OccurredOnce();
     }
 
 
@@ -56,8 +56,60 @@ The `HttpRequestSpy` provides a fluent API to help you define your expected http
        .WithQuery(new {
            id = "12"
        })
-       .OccuredOnce();
+       .OccurredOnce();
 ```
+
+### User friendly error messages
+
+One of the main idea behind this tool is to provide a user friendly error message when no recorded http request matches the expected one.
+
+```csharp
+    spy.APostRequestTo("/some/resource")
+        .WithJsonPayload(new {
+            prop1 = 1
+        })
+        .WithQuery(new {
+            id = "12"
+        })
+        .OccurredOnce();
+```
+
+```
+ ⚠ Unexpected number of recorded requests matching expectations. Expected : 1. Actual : 0
+
+Expectations: 
+ ✔ Method : POST
+ ✔ Expected URL : /some/resource
+ ✔ Payload : {"prop1":1}
+ ✔ Query { id = 12 }
+
+2 Recorded requests: 
+0/ GET http://domain/path/to/resource
+  ⚠ HttpMethod does not match:
+ - Expected : POST
+ - Actual : GET
+  ⚠ URL does not match:
+ - Expected : /some/resource
+ - Actual : /path/to/resource
+  ⚠ Payload is empty:
+ - Expected : {"prop1":1}
+ - Actual : [null]
+  ⚠ Query does not match :
+   -> Missing property $.id
+
+1/ POST http://domain/path/to/resource
+  ⚠ URL does not match:
+ - Expected : /some/resource
+ - Actual : /path/to/resource
+  ⚠ Payload is empty:
+ - Expected : {"prop1":1}
+ - Actual : [null]
+  ⚠ Query does not match :
+   -> Missing property $.id
+
+```
+
+
 
 ### Occurrences
 
@@ -65,16 +117,16 @@ You can define the number of occurences of your expected request.
 
 ```csharp
     spy.AGetRequestTo("/some/ressource")
-       .OccuredOnce();
+       .OccurredOnce();
 
     spy.AGetRequestTo("/some/ressource")
-       .OccuredTwice();
+       .OccurredTwice();
 
     spy.AGetRequestTo("/some/ressource")
-       .Occured(3);
+       .Occurred(3);
     
     spy.AGetRequestTo("/some/ressource")
-       .NeverOccured();
+       .NeverOccurred();
 ```
 
 ### Number of overall recorded requests
@@ -83,7 +135,7 @@ You can define the number of overall recorded requests.
 
 ```csharp
     spy.HasRecordedRequests(5);
-       .NeverOccured();
+       .NeverOccurred();
 ```
 This codes checks that 5 requests have been recorded regardless of the content of the requests.
 
@@ -93,12 +145,12 @@ You can define the absolute path or the relative url of your expected request.
 
 ```csharp
     spy.AGetRequestTo("/some/ressource")
-       .OccuredOnce();
+       .OccurredOnce();
 ```
 
 ```csharp
     spy.AGetRequestTo("https://myapi.com/some/ressource")
-       .OccuredOnce();
+       .OccurredOnce();
 ```
 
 ### GET, POST, PUT, DELETE, PATCH http verbs
@@ -107,19 +159,19 @@ You can define the http verb of your expected request.
 
 ```csharp
     spy.AGetRequestTo("/some/ressource")
-       .OccuredOnce();
+       .OccurredOnce();
     
     spy.APostRequestTo("/some/ressource")
-       .OccuredOnce();
+       .OccurredOnce();
     
     spy.APutRequestTo("/some/ressource")
-       .OccuredOnce();
+       .OccurredOnce();
     
     spy.APatchRequestTo("/some/ressource")
-       .OccuredOnce();
+       .OccurredOnce();
     
     spy.ADeleteRequestTo("/some/ressource")
-       .OccuredOnce();
+       .OccurredOnce();
 ```
 
 ### Query parameters
@@ -138,7 +190,7 @@ You can define the query parameters of your expected request as an anonymous obj
        .WithQueryParam("id", "12")
        .WithQueryParam("date", "2024-01-05")
         
-       .OccuredOnce();
+       .OccurredOnce();
 ```
 
 ### Body / Payload
@@ -174,7 +226,7 @@ See [HttpRequestSpyWhenJsonPayloadShould.cs](./src/HttpRequestSpy.Tests/HttpRequ
                         })
         
         
-       .OccuredOnce();
+       .OccurredOnce();
 ```
 
 ##### Json payload matching JsonSchema
@@ -184,7 +236,7 @@ Using JsonSchema, you can check that the payload matches a specific schema.
 ```csharp
     spy.APostRequestTo("/some/ressource")       
         .WithPayloadMatchingJsonSchema("path/to/schema.json")
-       .OccuredOnce();
+       .OccurredOnce();
 ```
 
 
@@ -216,5 +268,5 @@ See [HttpRequestSpyWhenXmlPayloadShould.cs](./src/HttpRequestSpy.Tests/HttpReque
         .WithXmlPayloadProperty("/_x003F_anonymous_x003F_/subProp/subProp1", "subValue")
         
         
-       .OccuredOnce();
+       .OccurredOnce();
 ```
