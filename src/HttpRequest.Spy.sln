@@ -7,6 +7,13 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "HttpRequest.Spy", "HttpRequ
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "HttpRequest.Spy.Tests", "HttpRequest.Spy.Tests\HttpRequest.Spy.Tests.csproj", "{5CF20FF2-82A8-4B51-8861-67861B0AA5E7}"
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "files", "files", "{252231B5-9AF2-448B-83E3-DFC28AEEFE8C}"
+	ProjectSection(SolutionItems) = preProject
+		.gitignore = .gitignore
+		GitVersion.yml = GitVersion.yml
+		..\.github\workflows\main.yml = ..\.github\workflows\main.yml
+	EndProjectSection
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU

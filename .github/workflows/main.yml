@@ -52,7 +52,7 @@ jobs:
         run: dotnet test src/**/*Test*.csproj --no-restore --verbosity normal
 
       - name: Pack
-        run: dotnet pack ${{ env.PACKAGE_PROJECT }} --configuration Release --output ./nupkg /p:Version=${{ env.GITVERSION_SEMVER }}
+        run: dotnet pack ${{ env.PACKAGE_PROJECT }} --configuration Release --output ./nupkg /p:Version=${{ env.GitVersion_SemVer }}
 
       - name: Publish
         run: dotnet nuget push ./nupkg/*.nupkg --api-key ${{ secrets.NUGET_ORG_API_KEY }} --source https://api.nuget.org/v3/index.json
