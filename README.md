@@ -135,7 +135,6 @@ You can define the number of overall recorded requests.
 
 ```csharp
     spy.HasRecordedRequests(5);
-       .NeverOccurred();
 ```
 This codes checks that 5 requests have been recorded regardless of the content of the requests.
 
