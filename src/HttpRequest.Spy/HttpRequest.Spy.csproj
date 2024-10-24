@@ -6,7 +6,7 @@
         <Nullable>enable</Nullable>
         <LangVersion>12.0</LangVersion>
 
-        <PackageIcon>icon.webp</PackageIcon>
+        <PackageIcon>icon.png</PackageIcon>
         <PackageReadmeFile>README.md</PackageReadmeFile>
         <PackageLicenseUrl>LICENSE</PackageLicenseUrl>
         <PackageProjectUrl>https://github.com/benoit-maurice/httprequest-spy</PackageProjectUrl>
