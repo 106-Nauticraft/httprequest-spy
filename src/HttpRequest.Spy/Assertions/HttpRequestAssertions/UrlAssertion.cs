@@ -1,6 +1,4 @@
-﻿#nullable enable
-
-namespace HttpRequest.Spy.Assertions.HttpRequestAssertions;
+﻿namespace HttpRequest.Spy.Assertions.HttpRequestAssertions;
 
 internal abstract record UrlAssertion : IAssertHttpRequest
 {

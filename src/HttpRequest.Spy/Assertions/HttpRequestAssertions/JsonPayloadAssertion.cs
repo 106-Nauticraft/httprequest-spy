@@ -1,5 +1,4 @@
-﻿#nullable enable
-using System.Net.Http.Json;
+﻿using System.Net.Http.Json;
 using System.Text;
 using System.Text.Json;
 using Json.Schema;
@@ -30,7 +29,14 @@ internal abstract record JsonPayloadAssertion : IAssertHttpRequest
                 
             if (!validation.IsValid)
             {
-                return AssertionResult.Failure($"Json Schema does not match : {validation.Errors}");
+                var errors = validation.Details
+                    .Where(result => result is { IsValid: false, HasErrors: true, Errors: not null })
+                    .SelectMany(result => result.Errors!, (path, errors) => new { path.EvaluationPath, errors.Value })
+                    .Select(errorByPath => $"At {errorByPath.EvaluationPath} : {errorByPath.Value}");
+
+                var errorMessage = string.Join('\n', errors);
+
+                return AssertionResult.Failure($"Json Schema does not match : {errorMessage}");
             }
                 
             return AssertionResult.Success();

@@ -1,5 +1,5 @@
 ﻿namespace HttpRequest.Spy.Assertions.HttpRequestAssertions;
-#nullable enable
+
 internal record HttpMethodAssertion(HttpMethod ExpectedHttpMethod) : IAssertHttpRequest
 {
     public AssertionResult Matches(AssertableHttpRequestMessage request)

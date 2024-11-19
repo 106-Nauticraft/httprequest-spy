@@ -135,7 +135,7 @@ public partial class HttpRequestSpyShould
     {
         var spy = HttpRequestSpy.CreateCurrentSpy();
 
-        await RegisterPostWithJsonPayloadRequest(new { something = true, property = "string" });
+        await RegisterPostWithJsonPayloadRequest(new { something = true, property = "string", anotherProperty = "string" });
 
         var schema =
             @"{
@@ -152,16 +152,22 @@ public partial class HttpRequestSpyShould
                     ""property"": {
                         ""description"": ""property"",
                         ""type"": ""integer""
+                    },
+                    ""anotherProperty"": {
+                        ""description"": ""property"",
+                        ""type"": ""integer""
                     }
                 },
-                ""required"": [ ""something"", ""property"" ]
+                ""required"": [ ""something"", ""property"", ""anotherProperty"" ]
             }";
 
         Check.ThatCode(() =>
                 spy.APostRequestTo("/path/to/resource")
                     .WithPayloadMatchingJsonSchemaFromText(schema)
                     .OccurredOnce())
-            .Throws<HttpRequestSpyException>();
+            .Throws<HttpRequestSpyException>()
+            .WithMessage(message => message.Contains("At /properties/property : Value is \"string\" but should be \"integer\""))
+            .WithMessage(message => message.Contains("At /properties/anotherProperty : Value is \"string\" but should be \"integer\""));
     }
 
 

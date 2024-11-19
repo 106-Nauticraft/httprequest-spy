@@ -1,4 +1,3 @@
-#nullable enable
 namespace HttpRequest.Spy.Assertions;
 
 public interface IAssertHttpRequest

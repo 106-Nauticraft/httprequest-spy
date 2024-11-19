@@ -1,8 +1,6 @@
 ﻿using System.Xml.Linq;
 using HttpRequest.Spy.Comparison;
 
-#nullable enable
-
 // ReSharper disable once CheckNamespace
 namespace System.Net.Http;
 
