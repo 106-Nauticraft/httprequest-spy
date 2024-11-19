@@ -23,14 +23,14 @@ internal abstract record JsonPayloadAssertion : IAssertHttpRequest
             stream.Seek(0, SeekOrigin.Begin);
             var jsonDocument = JsonDocument.Parse(stream);
 
-            var validation = JsonSchema.Validate(jsonDocument, new ValidationOptions
+            var validation = JsonSchema.Evaluate(jsonDocument, new EvaluationOptions
             {
-                OutputFormat = OutputFormat.Detailed
+                OutputFormat = OutputFormat.Hierarchical
             });
                 
             if (!validation.IsValid)
             {
-                return AssertionResult.Failure($"Json Schema does not match : {validation.Message}");
+                return AssertionResult.Failure($"Json Schema does not match : {validation.Errors}");
             }
                 
             return AssertionResult.Success();
